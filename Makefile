@@ -21,7 +21,7 @@ env-cleanup:
 env-port-forward:
 	@docker compose up -d port-forwarder
 
-env-port-down:
+env-port-close:
 	@docker compose down port-forwarder
 
 migrate-create:
