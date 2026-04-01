@@ -1,26 +1,62 @@
 package users_transport_http
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/lfssxxx/Golang-Todoapp/internal/core/domain"
+	core_logger "github.com/lfssxxx/Golang-Todoapp/internal/core/logger"
+	core_http_request "github.com/lfssxxx/Golang-Todoapp/internal/core/transport/http/request"
+	core_http_response "github.com/lfssxxx/Golang-Todoapp/internal/core/transport/http/response"
 )
 
 type CreateUserRequest struct {
+	FullName    string  `json:"full_name" validate:"required,min=3,max=100"`
+	PhoneNumber *string `json:"phone_number" validate:"omitempty,e164"`
+}
+
+type CreateUserResponse struct {
+	ID          int     `json:"id"`
+	Version     int     `json:"version"`
 	FullName    string  `json:"full_name"`
 	PhoneNumber *string `json:"phone_number"`
 }
 
-type CreateUserResponse struct {
-	ID          int    `json:"id"`
-	Version     int    `json:"version"`
-	FullName    string `json:"full_name"`
-	PhoneNumber string `json:"phone_number"`
+func (h *UsersHTTPHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log := core_logger.FromContext(ctx)
+	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
+
+	var request CreateUserRequest
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+		responseHandler.ErrorResponse(err, "falied to decode and validate HTTP request")
+
+		return
+	}
+
+	userDomain := domainFromDTO(request)
+
+	userDomain, err := h.usersService.CreateUser(ctx, userDomain)
+	if err != nil {
+		responseHandler.ErrorResponse(err, "failed to create User")
+
+		return
+	}
+
+	response := dtoFromDomain(userDomain)
+
+	responseHandler.JSONResponse(response, http.StatusCreated)
+
 }
 
-func (h *UsersHTTPHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
-	var request CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		fmt.Println("произошла апишка..")
+func domainFromDTO(dto CreateUserRequest) domain.User {
+	return domain.NewUserUnitialized(dto.FullName, dto.PhoneNumber)
+}
+
+func dtoFromDomain(user domain.User) CreateUserResponse {
+	return CreateUserResponse{
+		ID:          user.ID,
+		Version:     user.Version,
+		FullName:    user.FullName,
+		PhoneNumber: user.PhoneNumber,
 	}
 }
