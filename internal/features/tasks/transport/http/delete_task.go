@@ -1,4 +1,4 @@
-package users_transport_http
+package tasks_transport_http
 
 import (
 	"net/http"
@@ -8,32 +8,27 @@ import (
 	core_http_response "github.com/lfssxxx/Golang-Todoapp/internal/core/transport/http/response"
 )
 
-type GetUserResponse UserDTOResponse
-
-func (h *UsersHTTPHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
+func (h *TasksHTTPHandler) DeleteTask(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
-	userID, err := core_http_request.GetIntPathValue(r, "id")
-
+	taskID, err := core_http_request.GetIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to get userID path value",
+			"failed to get tasklID path value",
 		)
 
 		return
 	}
 
-	user, err := h.usersService.GetUser(ctx, userID)
-	if err != nil {
+	if err := h.tasksService.DeleteTask(ctx, taskID); err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to get user",
+			"failed to delete task",
 		)
 	}
 
-	response := GetUserResponse(userDTOFromDomain(user))
-	responseHandler.JSONResponse(response, http.StatusOK)
+	responseHandler.NoContentResponse()
 }
