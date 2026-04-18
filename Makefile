@@ -26,6 +26,14 @@ env-cleanup:
 		echo "Очистка окружения отменена"; \
 	fi
 
+log-cleanup:
+	@read -p "Очистить все log файлы? [Y/N]: " ans; \
+	if [ "$$ans" = "Y" ]; then \
+		rm -rf ${PROJECT_ROOT}/out/logs\
+		echo "Файлы логов очищены"; \
+	else \
+		echo "Очистка логов отменена"; \
+	fi
 
 env-port-forward:
 	@docker compose up -d port-forwarder
