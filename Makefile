@@ -10,6 +10,11 @@ todoapp-run:
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/todoapp/main.go
 
+todoapp-deploy:
+	docker compose up -d --build todoapp
+
+
+
 
 env-up:
 	@docker compose up -d todoapp-postgres
@@ -35,11 +40,15 @@ log-cleanup:
 		echo "Очистка логов отменена"; \
 	fi
 
+
+
 env-port-forward:
 	@docker compose up -d port-forwarder
 
 env-port-close:
 	@docker compose down port-forwarder
+
+
 
 migrate-create:
 	@if [ -z "$(seq)" ]; then \

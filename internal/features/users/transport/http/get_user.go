@@ -16,7 +16,6 @@ func (h *UsersHTTPHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
 	userID, err := core_http_request.GetIntPathValue(r, "id")
-
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
