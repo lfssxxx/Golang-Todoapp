@@ -13,6 +13,8 @@ todoapp-run:
 todoapp-deploy:
 	docker compose up -d --build todoapp
 
+todoapp-undeploy:
+	docker compose down todoapp
 
 
 
@@ -56,10 +58,7 @@ migrate-create:
 		exit 1; \
 	fi; \
 	    docker compose run --rm  todoapp-postgres-migrate \
-		create \
-		-ext sql \
-		-dir /migrations \
-		-seq "$(seq)"
+		create -ext sql -dir /migrations -seq "$(seq)"
 
 migrate-up:
 	@make migrate-action action=up
@@ -76,3 +75,8 @@ migrate-action:
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
+
+
+swagger-gen:
+	@docker compose run --rm swagger \
+		init -g cmd/todoapp/main.go -o docs --parseInternal --parseDependency 
