@@ -10,6 +10,17 @@ import (
 
 type GetUserResponse UserDTOResponse
 
+// GetUser 		godoc
+// @Summary 	Getting User
+// @Description Get user by his ID from DB
+// @Tags 		users
+// @Produce 	json
+// @Param 		id path int true "ID of user you want to get"
+// @Success 	200 {object} GetUserResponse "User was found"
+// @Failure 	400 {object} core_http_response.ErrorResponse "Bad Request"
+// @Failure 	404 {object} core_http_response.ErrorResponse "User Not Found"
+// @Failure 	500 {object} core_http_response.ErrorResponse "Internal Server Error"
+// @Router 		/users/{id} [get]
 func (h *UsersHTTPHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -31,6 +42,8 @@ func (h *UsersHTTPHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
 			err,
 			"failed to get user",
 		)
+
+		return
 	}
 
 	response := GetUserResponse(userDTOFromDomain(user))
