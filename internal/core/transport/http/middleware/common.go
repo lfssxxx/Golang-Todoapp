@@ -2,10 +2,12 @@ package core_http_middleware
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 	core_logger "github.com/lfssxxx/Golang-Todoapp/internal/core/logger"
+	"github.com/lfssxxx/Golang-Todoapp/internal/core/metrics"
 	core_http_response "github.com/lfssxxx/Golang-Todoapp/internal/core/transport/http/response"
 	"go.uber.org/zap"
 )
@@ -111,11 +113,18 @@ func Trace() Middleware {
 
 			next.ServeHTTP(rw, r)
 
+			duration := time.Since(before)
 			log.Debug(
 				"<<< done HTTP request",
 				zap.Int("status_code", rw.GetStatusCode()),
-				zap.Duration("latency", time.Since(before)),
+				zap.Duration("latency", duration),
 			)
+			statusStr := strconv.Itoa(rw.GetStatusCode())
+			// 1. Збільшуємо лічильник кількості запитів
+			metrics.HttpRequestsTotal.WithLabelValues(r.Method, statusStr).Inc()
+
+			// 2. Записуємо тривалість запиту в секундах (float64)
+			metrics.HttpDuration.WithLabelValues(r.Method, statusStr).Observe(duration.Seconds())
 		})
 	}
 }

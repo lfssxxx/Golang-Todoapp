@@ -9,6 +9,7 @@ import (
 	"github.com/lfssxxx/Golang-Todoapp/docs"
 	core_logger "github.com/lfssxxx/Golang-Todoapp/internal/core/logger"
 	core_http_middleware "github.com/lfssxxx/Golang-Todoapp/internal/core/transport/http/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"go.uber.org/zap"
 )
@@ -58,6 +59,10 @@ func (s *HTTPServer) RegisterSwagger() {
 		},
 	)
 
+}
+
+func (s *HTTPServer) RegisterMetrics() {
+	s.mux.Handle("/metrics", promhttp.Handler())
 }
 
 func (s *HTTPServer) Run(ctx context.Context) error {

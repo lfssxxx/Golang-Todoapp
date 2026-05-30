@@ -107,6 +107,8 @@ func main() {
 	)
 	httpServer.RegisterSwagger()
 
+	httpServer.RegisterMetrics()
+
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error", zap.Error(err))
 	}

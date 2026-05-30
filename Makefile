@@ -80,3 +80,10 @@ migrate-action:
 swagger-gen:
 	@docker compose run --rm swagger \
 		init -g cmd/todoapp/main.go -o docs --parseInternal --parseDependency 
+
+
+metrics-up:
+	@docker compose up -d prometheus grafana
+
+metrics-down:
+	@docker compose down prometheus grafana
