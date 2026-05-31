@@ -1,2 +1,3 @@
 .env
 out
+grafana_data/

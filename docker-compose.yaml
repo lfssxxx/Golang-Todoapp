@@ -83,10 +83,9 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ${PROJECT_ROOT}/grafana_data:/var/lib/grafana
       # - ./config/grafana.ini:/etc/grafana/grafana.ini
 
 
 volumes:
   pgdata:
-  grafana_data:
